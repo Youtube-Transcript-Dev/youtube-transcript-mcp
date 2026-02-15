@@ -38,9 +38,11 @@ Server at `http://localhost:8080`. API key comes from client headers. Keep runni
 
 Get API key from [youtubetranscript.dev/dashboard/account](https://youtubetranscript.dev/dashboard/account).
 
+**Hosted MCP (no local server):** `https://mcp.youtubetranscript.dev`
+
 **Claude Code:**
 ```bash
-claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-token: YOUR_API_KEY"
+claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --header "x-api-token: YOUR_API_KEY"
 ```
 
 **Cursor** – `.cursor/mcp.json`:
@@ -48,14 +50,16 @@ claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-t
 {
   "mcpServers": {
     "ytscribe": {
-      "url": "http://localhost:8080",
+      "url": "https://mcp.youtubetranscript.dev",
       "headers": { "x-api-token": "YOUR_API_KEY" }
     }
   }
 }
 ```
 
-**Antigravity:** URL `http://localhost:8080`, header `x-api-token: YOUR_API_KEY`
+**Antigravity:** URL `https://mcp.youtubetranscript.dev`, header `x-api-token: YOUR_API_KEY`
+
+**Local server:** If running `npm run start:http`, use `http://localhost:8080` instead.
 
 ---
 
@@ -101,6 +105,7 @@ docker run -p 8080:8080 youtube-transcript-mcp:http
 ```
 
 Then connect clients to `http://localhost:8080` with `x-api-token` header.
+(Or use hosted: `https://mcp.youtubetranscript.dev` — no Docker needed.)
 
 **Docker Compose (stdio):**
 ```bash

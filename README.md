@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://youtubetranscript.dev">Website</a> •
+  <a href="https://mcp.youtubetranscript.dev">Hosted MCP</a> •
   <a href="https://youtubetranscript.dev/api-docs">API Docs</a> •
   <a href="https://youtubetranscript.dev/pricing">Pricing</a> •
   <a href="#quick-start">Quick Start</a> •
@@ -40,21 +41,17 @@ Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](h
 
 ## Quick Start
 
-### 1. Start the MCP Server
-
-```bash
-npm install && npm run build && npm run start:http
-```
-
-### 2. Get Your API Key
+### 1. Get Your API Key
 
 Sign up at [youtubetranscript.dev](https://youtubetranscript.dev) and grab your API key from the [Dashboard](https://youtubetranscript.dev/dashboard/account).
 
-### 3. Connect Your Client
+### 2. Connect Your Client
 
-Connect to `http://localhost:8080` with header `x-api-token: YOUR_API_KEY`.
+Connect to **https://mcp.youtubetranscript.dev** with header `x-api-token: YOUR_API_KEY`. No local setup required.
 
 See [QUICK_TEST.md](QUICK_TEST.md) for step-by-step setup and testing.
+
+**Run locally (optional):** `npm install && npm run build && npm run start:http` — then connect to `http://localhost:8080`.
 
 ---
 
@@ -63,7 +60,7 @@ See [QUICK_TEST.md](QUICK_TEST.md) for step-by-step setup and testing.
 ### Claude Code
 
 ```bash
-claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-token: YOUR_API_KEY"
+claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --header "x-api-token: YOUR_API_KEY"
 ```
 
 ### Claude Desktop
@@ -75,7 +72,7 @@ claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-t
 {
   "mcpServers": {
     "ytscribe": {
-      "url": "http://localhost:8080",
+      "url": "https://mcp.youtubetranscript.dev",
       "headers": { "x-api-token": "YOUR_API_KEY" }
     }
   }
@@ -90,7 +87,7 @@ claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-t
 {
   "mcpServers": {
     "ytscribe": {
-      "url": "http://localhost:8080",
+      "url": "https://mcp.youtubetranscript.dev",
       "headers": { "x-api-token": "YOUR_API_KEY" }
     }
   }
@@ -105,7 +102,7 @@ claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-t
 {
   "mcpServers": {
     "ytscribe": {
-      "serverUrl": "http://localhost:8080",
+      "serverUrl": "https://mcp.youtubetranscript.dev",
       "headers": { "x-api-token": "YOUR_API_KEY" }
     }
   }
@@ -121,7 +118,7 @@ claude mcp add --transport http ytscribe http://localhost:8080 --header "x-api-t
   "mcp": {
     "servers": {
       "ytscribe": {
-        "url": "http://localhost:8080",
+        "url": "https://mcp.youtubetranscript.dev",
         "headers": { "x-api-token": "YOUR_API_KEY" }
       }
     }
@@ -136,7 +133,7 @@ Add to your Cline MCP config (format may vary by Cline version):
 ```json
 {
   "ytscribe": {
-    "url": "http://localhost:8080",
+    "url": "https://mcp.youtubetranscript.dev",
     "headers": { "x-api-token": "YOUR_API_KEY" }
   }
 }
@@ -283,6 +280,7 @@ See [QUICK_TEST.md](QUICK_TEST.md) for full testing instructions.
 ## Links
 
 - 🌐 [YouTubeTranscript.dev](https://youtubetranscript.dev)
+- 🔌 [Hosted MCP](https://mcp.youtubetranscript.dev)
 - 📖 [API Documentation](https://youtubetranscript.dev/api-docs)
 - 💰 [Pricing](https://youtubetranscript.dev/pricing)
 
