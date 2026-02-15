@@ -1,0 +1,16 @@
+# Docker Compose for YouTubeTranscript-MiniSaaS MCP
+# Use: docker compose run --rm mcp
+# The MCP server uses stdio - run with -it for interactive
+
+services:
+  mcp:
+    build: .
+    image: youtube-transcript-mcp:latest
+    stdin_open: true
+    tty: true
+    environment:
+      - YTSM_BASE_URL=${YTSM_BASE_URL:-https://youtubetranscript.dev}
+      - YTSM_API_KEY=${YTSM_API_KEY}
+      - YTSM_TIMEOUT_MS=${YTSM_TIMEOUT_MS:-30000}
+      - DEBUG=${DEBUG:-false}
+    # No ports - stdio transport

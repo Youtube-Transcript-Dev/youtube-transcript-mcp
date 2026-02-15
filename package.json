@@ -1,33 +1,56 @@
 {
-    "name": "youtube-transcript-mcp",
-    "version": "1.0.0",
-    "description": "MCP (Model Context Protocol) server for YouTube Transcript service",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "type": "module",
-    "scripts": {
-        "build": "tsc",
-        "start": "node dist/server/index.js",
-        "dev": "tsx watch src/server.ts"
-    },
-    "keywords": [
-        "mcp",
-        "youtube",
-        "transcript",
-        "model-context-protocol"
-    ],
-    "author": "",
-    "license": "MIT",
-    "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.0.0",
-        "zod": "^3.22.0"
-    },
-    "devDependencies": {
-        "@types/node": "^20.0.0",
-        "typescript": "^5.0.0",
-        "tsx": "^4.0.0"
-    },
-    "engines": {
-        "node": ">=18.0.0"
-    }
+  "name": "youtube-transcript-mcp",
+  "version": "2.0.0",
+  "description": "MCP server for YouTubeTranscript-MiniSaaS v2 API. Features transcript creation, batch processing, job polling, and format export.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:http": "node dist/server-http.js",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write .",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:integration": "npm run build && tsx scripts/test-mcp.ts",
+    "test:all": "npm run build && tsx scripts/test-all-tools.ts",
+    "test:docker": "npm run build && docker build -t youtube-transcript-mcp:latest . && tsx scripts/test-docker.ts",
+    "prepublishOnly": "npm run build",
+    "verify": "npm run build && tsx scripts/verify-flows.ts"
+  },
+  "keywords": [
+    "mcp",
+    "youtube",
+    "transcript",
+    "model-context-protocol",
+    "minisaas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "dotenv": "^16.4.7",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
