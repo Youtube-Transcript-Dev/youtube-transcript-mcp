@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** HTTP MCP server. API key from x-api-token or Authorization: Bearer. */
+/** HTTP MCP server. API key from x-api-token, Authorization: Bearer, or ?key= query param. */
 
 import 'dotenv/config';
 import { createServer } from 'node:http';
@@ -10,15 +10,23 @@ const port = parseInt(process.env.PORT ?? '8080', 10);
 const baseUrl = process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev';
 const timeoutMs = parseInt(process.env.YTSM_TIMEOUT_MS ?? '30000', 10);
 
-function getApiKeyFromRequest(req: { headers: Record<string, string | string[] | undefined> }): string | null {
+function getApiKeyFromRequest(req: { headers: Record<string, string | string[] | undefined>; url?: string }): string | null {
   const headers = req.headers;
+  // 1. Check x-api-token header
   const token = headers['x-api-token'];
   if (token) return Array.isArray(token) ? token[0] : token;
+  // 2. Check Authorization: Bearer header
   const auth = headers['authorization'];
   if (auth) {
     const m = (Array.isArray(auth) ? auth[0] : auth).match(/^Bearer\s+(.+)$/i);
     if (m) return m[1];
   }
+  // 3. Check ?key= query parameter (for Claude.ai MCP connector)
+  try {
+    const url = new URL(req.url ?? '', 'http://localhost');
+    const key = url.searchParams.get('key');
+    if (key) return key;
+  } catch {}
   return null;
 }
 
@@ -26,7 +34,7 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   const apiKey = getApiKeyFromRequest(nodeReq);
   if (!apiKey) {
     nodeRes.writeHead(401, { 'Content-Type': 'application/json' });
-    nodeRes.end(JSON.stringify({ error: 'Missing API key. Use x-api-token header or Authorization: Bearer <token>' }));
+    nodeRes.end(JSON.stringify({ error: 'Missing API key. Use x-api-token header, Authorization: Bearer <token>, or ?key=<token>' }));
     return;
   }
 
@@ -85,5 +93,5 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
 });
 
 httpServer.listen(port, () => {
-  console.log(`MCP HTTP server on port ${port} (API key from request headers)`);
+  console.log(`MCP HTTP server on port ${port} (API key from request headers or ?key= param)`);
 });
