@@ -65,18 +65,17 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   for (const [k, v] of Object.entries(nodeReq.headers)) {
     if (v) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
   }
-  let body: Uint8Array | undefined;
+  let body: Buffer | undefined;
   if (nodeReq.method !== 'GET' && nodeReq.method !== 'HEAD') {
     const chunks: Buffer[] = [];
     for await (const chunk of nodeReq) chunks.push(chunk);
-    const buf = Buffer.concat(chunks);
-    body = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    body = Buffer.concat(chunks);
   }
   const request = new Request(url, {
     method: nodeReq.method ?? 'GET',
     headers,
     body: body?.byteLength ? body : undefined,
-  });
+  } as RequestInit);
 
   try {
     const response = await transport.handleRequest(request);
