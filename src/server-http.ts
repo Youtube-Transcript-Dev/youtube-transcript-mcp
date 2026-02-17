@@ -12,22 +12,29 @@ const timeoutMs = parseInt(process.env.YTSM_TIMEOUT_MS ?? '30000', 10);
 
 function getApiKeyFromRequest(req: { headers: Record<string, string | string[] | undefined>; url?: string }): string | null {
   const headers = req.headers;
-  // 1. Check x-api-token header
   const token = headers['x-api-token'];
   if (token) return Array.isArray(token) ? token[0] : token;
-  // 2. Check Authorization: Bearer header
   const auth = headers['authorization'];
   if (auth) {
     const m = (Array.isArray(auth) ? auth[0] : auth).match(/^Bearer\s+(.+)$/i);
     if (m) return m[1];
   }
-  // 3. Check ?key= query parameter (for Claude.ai MCP connector)
   try {
     const url = new URL(req.url ?? '', 'http://localhost');
     const key = url.searchParams.get('key');
     if (key) return key;
   } catch {}
   return null;
+}
+
+function stripKeyFromUrl(originalUrl: string): string {
+  try {
+    const url = new URL(originalUrl, 'http://localhost');
+    url.searchParams.delete('key');
+    return url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '');
+  } catch {
+    return originalUrl;
+  }
 }
 
 const httpServer = createServer(async (nodeReq, nodeRes) => {
@@ -51,7 +58,9 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   });
   await server.connect(transport);
 
-  const url = `http://${nodeReq.headers.host ?? 'localhost'}${nodeReq.url}`;
+  const cleanPath = stripKeyFromUrl(nodeReq.url ?? '/');
+  const url = `http://${nodeReq.headers.host ?? 'localhost'}${cleanPath}`;
+
   const headers = new Headers();
   for (const [k, v] of Object.entries(nodeReq.headers)) {
     if (v) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
@@ -93,5 +102,5 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
 });
 
 httpServer.listen(port, () => {
-  console.log(`MCP HTTP server on port ${port} (API key from request headers or ?key= param)`);
+  console.log(`MCP HTTP server on port ${port}`);
 });
