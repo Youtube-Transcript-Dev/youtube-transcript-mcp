@@ -19,7 +19,6 @@
 
 <p align="center">
   <a href="https://youtubetranscript.dev"><img src="https://img.shields.io/badge/API-v2-brightgreen" alt="API Version" /></a>
-  <a href="https://www.npmjs.com/package/youtube-transcript-mcp"><img src="https://img.shields.io/npm/v/youtube-transcript-mcp?label=npm" alt="npm" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
 </p>
 
