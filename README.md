@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://youtubetranscript.dev/logo.svg" alt="YouTubeTranscript.dev" width="80" />
+  <img src="https://www.youtubetranscript.dev/logo.svg" alt="YouTubeTranscript.dev" width="80" />
 </p>
 
 <h1 align="center">YouTube Transcript MCP Server</h1>
@@ -9,16 +9,16 @@
 </p>
 
 <p align="center">
-  <a href="https://youtubetranscript.dev">Website</a> •
+  <a href="https://www.youtubetranscript.dev">Website</a> •
   <a href="https://mcp.youtubetranscript.dev">Hosted MCP</a> •
-  <a href="https://youtubetranscript.dev/api-docs">API Docs</a> •
-  <a href="https://youtubetranscript.dev/pricing">Pricing</a> •
+  <a href="https://www.youtubetranscript.dev/api-docs">API Docs</a> •
+  <a href="https://www.youtubetranscript.dev/pricing">Pricing</a> •
   <a href="#quick-start">Quick Start</a> •
   <a href="#tools-reference">Tools</a>
 </p>
 
 <p align="center">
-  <a href="https://youtubetranscript.dev"><img src="https://img.shields.io/badge/API-v2-brightgreen" alt="API Version" /></a>
+  <a href="https://www.youtubetranscript.dev"><img src="https://img.shields.io/badge/API-v2-brightgreen" alt="API Version" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
 </p>
 
@@ -26,7 +26,7 @@
 
 ## Why This MCP Server?
 
-Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](https://youtubetranscript.dev) — no custom code. Your AI assistant gets tools to extract transcripts, list history, and manage content at scale.
+Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](https://www.youtubetranscript.dev) — no custom code. Your AI assistant gets tools to extract transcripts, list history, and manage content at scale.
 
 - ⚡ **Fast caption extraction** — Manual or auto captions, returns in seconds
 - 📚 **Transcript history** — List, search, and paginate your transcripts
@@ -34,7 +34,7 @@ Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](h
 - 🔌 **One config** — Works with Claude, Cursor, Windsurf, VS Code, Cline
 - 🔒 **User-owned keys** — API key per connection, no server-side secrets
 
-**→ [Get your free API key](https://youtubetranscript.dev)**
+**→ [Get your free API key](https://www.youtubetranscript.dev)**
 
 ---
 
@@ -42,7 +42,7 @@ Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](h
 
 ### 1. Get Your API Key
 
-Sign up at [youtubetranscript.dev](https://youtubetranscript.dev) and grab your API key from the [Dashboard](https://youtubetranscript.dev/dashboard/account).
+Sign up at [youtubetranscript.dev](https://www.youtubetranscript.dev) and grab your API key from the [Dashboard](https://www.youtubetranscript.dev/dashboard/account).
 
 ### 2. Connect Your Client
 
@@ -140,7 +140,7 @@ Add to your Cline MCP config (format may vary by Cline version):
 
 ---
 
-Replace `YOUR_API_KEY` with your API key from [youtubetranscript.dev/dashboard/account](https://youtubetranscript.dev/dashboard/account).
+Replace `YOUR_API_KEY` with your API key from [youtubetranscript.dev/dashboard/account](https://www.youtubetranscript.dev/dashboard/account).
 
 ---
 
@@ -278,10 +278,10 @@ See [QUICK_TEST.md](QUICK_TEST.md) for full testing instructions.
 
 ## Links
 
-- 🌐 [YouTubeTranscript.dev](https://youtubetranscript.dev)
+- 🌐 [YouTubeTranscript.dev](https://www.youtubetranscript.dev)
 - 🔌 [Hosted MCP](https://mcp.youtubetranscript.dev)
-- 📖 [API Documentation](https://youtubetranscript.dev/api-docs)
-- 💰 [Pricing](https://youtubetranscript.dev/pricing)
+- 📖 [API Documentation](https://www.youtubetranscript.dev/api-docs)
+- 💰 [Pricing](https://www.youtubetranscript.dev/pricing)
 
 ---
 
