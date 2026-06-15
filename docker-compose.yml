@@ -9,7 +9,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - YTSM_BASE_URL=${YTSM_BASE_URL:-https://youtubetranscript.dev}
+      - YTSM_BASE_URL=${YTSM_BASE_URL:-https://www.youtubetranscript.dev}
       - YTSM_API_KEY=${YTSM_API_KEY}
       - YTSM_TIMEOUT_MS=${YTSM_TIMEOUT_MS:-30000}
       - DEBUG=${DEBUG:-false}

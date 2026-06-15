@@ -7,7 +7,7 @@ import { createMcpServer, configSchema } from './mcp.js';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 
 const port = parseInt(process.env.PORT ?? '8080', 10);
-const baseUrl = process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev';
+const baseUrl = process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
 const timeoutMs = parseInt(process.env.YTSM_TIMEOUT_MS ?? '30000', 10);
 
 function getApiKeyFromRequest(req: { headers: Record<string, string | string[] | undefined>; url?: string }): string | null {

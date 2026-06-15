@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { HttpError, requestJson } from './http-client.js';
 
 export const configSchema = z.object({
-  baseUrl: z.string().min(1).default('https://youtubetranscript.dev'),
+  baseUrl: z.string().min(1).default('https://www.youtubetranscript.dev'),
   apiKey: z.string().min(1),
   timeoutMs: z.coerce.number().int().positive().default(30_000),
   debug: z.boolean().optional().default(false),

@@ -34,7 +34,7 @@ if (process.env.RUN_STDIO || isMainModule) {
 export function createSandboxServer() {
   return createMcpServer(
     configSchema.parse({
-      baseUrl: process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev',
+      baseUrl: process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev',
       apiKey: process.env.YTSM_API_KEY ?? 'sandbox-only',
       timeoutMs: process.env.YTSM_TIMEOUT_MS ?? 30_000,
       debug: false,
