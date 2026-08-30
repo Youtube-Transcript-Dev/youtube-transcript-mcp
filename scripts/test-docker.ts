@@ -11,7 +11,7 @@ async function main() {
     process.exit(1);
   }
   const baseUrl =
-    process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev';
+    process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
   const transport = new StdioClientTransport({
     command: 'docker',
     args: [

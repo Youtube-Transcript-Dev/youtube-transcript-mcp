@@ -10,7 +10,7 @@ async function main() {
     console.error('Usage: YTSM_API_KEY=xxx tsx scripts/test-mcp.ts [videoUrl]');
     process.exit(1);
   }
-  const baseUrl = process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev';
+  const baseUrl = process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
   const video =
     process.argv[3] ?? 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
 

@@ -1,5 +1,12 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
 import { listTools, callTool, createMcpServer, configSchema } from './mcp.js';
+import {
+  authorizationServerMetadata,
+  isPublicMcpPath,
+  mcpPublicOrigin,
+  protectedResourceMetadata,
+  wwwAuthenticateHeader,
+} from './oauth-metadata.js';
 
 describe('YouTubeTranscript-MiniSaaS MCP', () => {
   const testConfig = configSchema.parse({
@@ -40,5 +47,29 @@ describe('YouTubeTranscript-MiniSaaS MCP', () => {
     const { server } = createMcpServer(testConfig);
     expect(server).toBeDefined();
     expect(typeof server.setRequestHandler).toBe('function');
+  });
+
+  test('OAuth discovery paths are public', () => {
+    expect(isPublicMcpPath('/.well-known/oauth-protected-resource')).toBe(true);
+    expect(isPublicMcpPath('/.well-known/oauth-authorization-server')).toBe(true);
+    expect(isPublicMcpPath('/')).toBe(false);
+  });
+
+  test('protected resource metadata points at the website issuer', () => {
+    const meta = protectedResourceMetadata('https://mcp.youtubetranscript.dev');
+    expect(meta.authorization_servers).toEqual([
+      'https://www.youtubetranscript.dev',
+    ]);
+    expect(
+      authorizationServerMetadata().authorization_endpoint
+    ).toBe('https://www.youtubetranscript.dev/api/mcp/oauth/authorize');
+    expect(authorizationServerMetadata().client_id_metadata_document_supported).toBe(true);
+    expect(wwwAuthenticateHeader('https://mcp.youtubetranscript.dev')).toContain(
+      'resource_metadata='
+    );
+    expect(wwwAuthenticateHeader('https://mcp.youtubetranscript.dev')).toContain(
+      'scope="mcp"'
+    );
+    expect(mcpPublicOrigin()).toBe('https://mcp.youtubetranscript.dev');
   });
 });

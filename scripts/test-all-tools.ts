@@ -5,7 +5,7 @@ import { Client } from '@modelcontextprotocol/sdk/client';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
 const apiKey = process.env.YTSM_API_KEY;
-const baseUrl = process.env.YTSM_BASE_URL ?? 'https://youtubetranscript.dev';
+const baseUrl = process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
 const video =
   process.argv[2] ?? 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
 

@@ -54,7 +54,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --memory 256Mi \
   --cpu 1 \
   --timeout 60s \
-  --set-env-vars "NODE_ENV=production,YTSM_BASE_URL=https://youtubetranscript.dev,YTSM_TIMEOUT_MS=30000" \
+  --set-env-vars "NODE_ENV=production,YTSM_BASE_URL=https://www.youtubetranscript.dev,MCP_PUBLIC_URL=https://mcp.youtubetranscript.dev,YTSM_TIMEOUT_MS=30000" \
   --quiet
 
 SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format="value(status.url)")
@@ -81,7 +81,7 @@ echo " DNS: Add a CNAME record:"
 echo "   mcp  CNAME  ghs.googlehosted.com."
 echo ""
 echo " Test:"
-echo "   curl -X POST $SERVICE_URL/mcp \\"
+echo "   curl -X POST $SERVICE_URL \\"
 echo "     -H 'Content-Type: application/json' \\"
 echo "     -H 'Authorization: Bearer YOUR_API_KEY' \\"
 echo "     -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}'"

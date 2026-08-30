@@ -1,29 +1,33 @@
 #!/usr/bin/env node
-/** HTTP MCP server. API key from x-api-token, Authorization: Bearer, or ?key= query param. */
+/** HTTP MCP server. Auth via OAuth Bearer, then x-api-token. */
 
 import 'dotenv/config';
 import { createServer } from 'node:http';
 import { createMcpServer, configSchema } from './mcp.js';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import {
+  corsHeaders,
+  isPublicMcpPath,
+  mcpPublicOrigin,
+  protectedResourceMetadata,
+  wwwAuthenticateHeader,
+} from './oauth-metadata.js';
 
 const port = parseInt(process.env.PORT ?? '8080', 10);
 const baseUrl = process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
 const timeoutMs = parseInt(process.env.YTSM_TIMEOUT_MS ?? '30000', 10);
 
-function getApiKeyFromRequest(req: { headers: Record<string, string | string[] | undefined>; url?: string }): string | null {
+function getApiKeyFromRequest(req: {
+  headers: Record<string, string | string[] | undefined>;
+}): string | null {
   const headers = req.headers;
-  const token = headers['x-api-token'];
-  if (token) return Array.isArray(token) ? token[0] : token;
   const auth = headers['authorization'];
   if (auth) {
     const m = (Array.isArray(auth) ? auth[0] : auth).match(/^Bearer\s+(.+)$/i);
     if (m) return m[1];
   }
-  try {
-    const url = new URL(req.url ?? '', 'http://localhost');
-    const key = url.searchParams.get('key');
-    if (key) return key;
-  } catch {}
+  const token = headers['x-api-token'];
+  if (token) return Array.isArray(token) ? token[0] : token;
   return null;
 }
 
@@ -37,11 +41,57 @@ function stripKeyFromUrl(originalUrl: string): string {
   }
 }
 
+function json(res: import('node:http').ServerResponse, status: number, body: unknown, extra: Record<string, string> = {}) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json',
+    ...corsHeaders(),
+    ...extra,
+  });
+  res.end(JSON.stringify(body));
+}
+
 const httpServer = createServer(async (nodeReq, nodeRes) => {
+  const origin = mcpPublicOrigin();
+  const reqUrl = nodeReq.url ?? '/';
+
+  if (nodeReq.method === 'OPTIONS') {
+    nodeRes.writeHead(204, corsHeaders());
+    nodeRes.end();
+    return;
+  }
+
+  if (isPublicMcpPath(reqUrl)) {
+    const pathname = new URL(reqUrl, 'http://localhost').pathname;
+    if (pathname === '/.well-known/oauth-protected-resource') {
+      json(nodeRes, 200, protectedResourceMetadata(origin));
+      return;
+    }
+    if (pathname === '/.well-known/oauth-authorization-server') {
+      nodeRes.writeHead(302, {
+        Location: 'https://www.youtubetranscript.dev/.well-known/oauth-authorization-server',
+        ...corsHeaders(),
+      });
+      nodeRes.end();
+      return;
+    }
+    json(nodeRes, 404, { error: 'Not found' });
+    return;
+  }
+
   const apiKey = getApiKeyFromRequest(nodeReq);
   if (!apiKey) {
-    nodeRes.writeHead(401, { 'Content-Type': 'application/json' });
-    nodeRes.end(JSON.stringify({ error: 'Missing API key. Use x-api-token header, Authorization: Bearer <token>, or ?key=<token>' }));
+    json(
+      nodeRes,
+      401,
+      {
+        error:
+          'Authorization required. Use OAuth or Authorization: Bearer <token>.',
+      },
+      {
+        'WWW-Authenticate': wwwAuthenticateHeader(origin),
+        'Access-Control-Expose-Headers': 'WWW-Authenticate',
+      }
+    );
     return;
   }
 
@@ -80,7 +130,7 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   try {
     const response = await transport.handleRequest(request);
     const res = response ?? new Response('Not Found', { status: 404 });
-    const resHeaders: Record<string, string> = {};
+    const resHeaders: Record<string, string> = { ...corsHeaders() };
     res.headers.forEach((v, k) => {
       resHeaders[k] = v;
     });
@@ -94,7 +144,7 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
     nodeRes.end();
   } catch (err) {
     console.error('Server error:', err);
-    nodeRes.writeHead(500, { 'Content-Type': 'text/plain' });
+    nodeRes.writeHead(500, { 'Content-Type': 'text/plain', ...corsHeaders() });
     nodeRes.end('Internal Server Error');
   } finally {
     await server.close();

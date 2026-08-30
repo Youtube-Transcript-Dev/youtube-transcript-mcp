@@ -62,6 +62,7 @@ export async function requestJson(params: {
     {
       method: params.method,
       headers: params.headers,
+      redirect: 'manual',
       body:
         params.method === 'POST'
           ? JSON.stringify(params.body ?? {})
@@ -69,6 +70,15 @@ export async function requestJson(params: {
     },
     params.timeoutMs
   );
+
+  if (res.status >= 300 && res.status < 400) {
+    const location = res.headers.get('location') ?? '';
+    throw new HttpError(
+      `HTTP ${res.status} redirect to ${location}. Set YTSM_BASE_URL to https://www.youtubetranscript.dev`,
+      res.status,
+      location
+    );
+  }
 
   if (!res.ok) {
     const text = await readBodyTextSafe(res);

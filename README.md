@@ -22,6 +22,12 @@
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
 </p>
 
+<p align="center">
+  <a href="https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=YouTube%20Transcript&connectorUrl=https%3A%2F%2Fmcp.youtubetranscript.dev"><img src="https://img.shields.io/badge/Add_to-Claude-d97706" alt="Add to Claude" /></a>
+  <a href="https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt"><img src="https://img.shields.io/badge/ChatGPT_setup-10a37f" alt="ChatGPT MCP setup" /></a>
+  <a href="https://cursor.com/install-mcp?name=youtubetranscript&config=eyJ1cmwiOiJodHRwczovL21jcC55b3V0dWJldHJhbnNjcmlwdC5kZXYifQ=="><img src="https://img.shields.io/badge/Add_to-Cursor-000000" alt="Add to Cursor" /></a>
+</p>
+
 ---
 
 ## Why This MCP Server?
@@ -40,15 +46,22 @@ Connect Claude, Cursor, Windsurf, or any MCP client to [YouTubeTranscript.dev](h
 
 ## Quick Start
 
-### 1. Get Your API Key
+Remote MCP URL: **https://mcp.youtubetranscript.dev**
 
-Sign up at [youtubetranscript.dev](https://www.youtubetranscript.dev) and grab your API key from the [Dashboard](https://www.youtubetranscript.dev/dashboard/account).
+Claude, Cursor, and VS Code can add this as a remote MCP connector. ChatGPT users must enable Developer mode and create a custom app with this URL; availability depends on the workspace plan. OAuth-capable clients sign in once, so no API key is needed in the chat.
 
-### 2. Connect Your Client
+| Client | One-click |
+| --- | --- |
+| Claude | [Add custom connector](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=YouTube%20Transcript&connectorUrl=https%3A%2F%2Fmcp.youtubetranscript.dev) |
+| ChatGPT | [Developer mode / custom MCP app setup](https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt) or [Custom GPT](https://chatgpt.com/g/g-6a039b00ddf881918f2590c6312d2c15-video-transcript-extractor) |
+| Cursor | [Install](cursor://anysphere.cursor-deeplink/mcp/install?name=youtubetranscript&config=eyJ1cmwiOiJodHRwczovL21jcC55b3V0dWJldHJhbnNjcmlwdC5kZXYifQ==) |
+| VS Code | [Install](vscode:mcp/install?%7B%22name%22%3A%22youtubetranscript%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.youtubetranscript.dev%22%7D) |
+| Claude Code | `claude mcp add --transport http youtubetranscript https://mcp.youtubetranscript.dev` |
+| Grok | `grok mcp add --transport http youtubetranscript https://mcp.youtubetranscript.dev` |
 
-Connect to **https://mcp.youtubetranscript.dev** with header `x-api-token: YOUR_API_KEY`. No local setup required.
+Full walkthrough: [youtubetranscript.dev/resources/mcp-server](https://www.youtubetranscript.dev/resources/mcp-server)
 
-See [QUICK_TEST.md](QUICK_TEST.md) for step-by-step setup and testing.
+**API key clients** (if the tool has no OAuth): send `Authorization: Bearer YOUR_API_KEY`. `x-api-token` still works. Get a key from the [account page](https://www.youtubetranscript.dev/dashboard/account).
 
 **Run locally (optional):** `npm install && npm run build && npm run start:http` — then connect to `http://localhost:8080`.
 
@@ -59,7 +72,7 @@ See [QUICK_TEST.md](QUICK_TEST.md) for step-by-step setup and testing.
 ### Claude Code
 
 ```bash
-claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --header "x-api-token: YOUR_API_KEY"
+claude mcp add --transport http youtubetranscript https://mcp.youtubetranscript.dev
 ```
 
 ### Claude Desktop
@@ -70,9 +83,9 @@ claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --hea
 ```json
 {
   "mcpServers": {
-    "ytscribe": {
+    "youtubetranscript": {
       "url": "https://mcp.youtubetranscript.dev",
-      "headers": { "x-api-token": "YOUR_API_KEY" }
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
@@ -85,9 +98,9 @@ claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --hea
 ```json
 {
   "mcpServers": {
-    "ytscribe": {
+    "youtubetranscript": {
       "url": "https://mcp.youtubetranscript.dev",
-      "headers": { "x-api-token": "YOUR_API_KEY" }
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
@@ -100,9 +113,9 @@ claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --hea
 ```json
 {
   "mcpServers": {
-    "ytscribe": {
+    "youtubetranscript": {
       "serverUrl": "https://mcp.youtubetranscript.dev",
-      "headers": { "x-api-token": "YOUR_API_KEY" }
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
@@ -116,9 +129,9 @@ claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --hea
 {
   "mcp": {
     "servers": {
-      "ytscribe": {
+      "youtubetranscript": {
         "url": "https://mcp.youtubetranscript.dev",
-        "headers": { "x-api-token": "YOUR_API_KEY" }
+        "headers": { "Authorization": "Bearer YOUR_API_KEY" }
       }
     }
   }
@@ -131,9 +144,9 @@ Add to your Cline MCP config (format may vary by Cline version):
 
 ```json
 {
-  "ytscribe": {
+  "youtubetranscript": {
     "url": "https://mcp.youtubetranscript.dev",
-    "headers": { "x-api-token": "YOUR_API_KEY" }
+    "headers": { "Authorization": "Bearer YOUR_API_KEY" }
   }
 }
 ```
@@ -150,12 +163,13 @@ Replace `YOUR_API_KEY` with your API key from [youtubetranscript.dev/dashboard/a
 
 | Variable          | Description           | Default                         |
 | ----------------- | --------------------- | ------------------------------- |
-| `YTSM_BASE_URL`   | Base URL of the API   | `https://youtubetranscript.dev` |
+| `YTSM_BASE_URL`   | Base URL of the API   | `https://www.youtubetranscript.dev` |
+| `MCP_PUBLIC_URL`  | Public MCP origin     | `https://mcp.youtubetranscript.dev` |
 | `YTSM_TIMEOUT_MS` | Request timeout in ms | `30000`                         |
 | `PORT`            | HTTP server port      | `8080`                          |
 | `DEBUG`           | Enable debug logging  | `false` (set `true` to enable)  |
 
-**Note:** The API key is **not** set in server env for HTTP mode. Users provide it via `x-api-token` or `Authorization: Bearer` when connecting. For stdio mode, set `YTSM_API_KEY` in env.
+**Note:** HTTP mode uses OAuth where the client supports it, including compatible Claude, Cursor, VS Code, and Grok clients. ChatGPT requires Developer mode and a custom MCP app. API-key clients can send `Authorization: Bearer` / `x-api-token` from the client. Do not put user keys in server env. For stdio mode, set `YTSM_API_KEY`. Always set `YTSM_BASE_URL` to `https://www.youtubetranscript.dev` — the apex host 301s and breaks POST/auth.
 
 ---
 
@@ -241,7 +255,7 @@ Run as a subprocess instead of HTTP. **Required:** set `YTSM_API_KEY` in env (AP
 ```json
 {
   "mcpServers": {
-    "ytscribe": {
+    "youtubetranscript": {
       "command": "node",
       "args": ["dist/index.js"],
       "env": { "YTSM_API_KEY": "YOUR_API_KEY" }

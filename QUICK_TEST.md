@@ -42,22 +42,23 @@ Get API key from [youtubetranscript.dev/dashboard/account](https://youtubetransc
 
 **Claude Code:**
 ```bash
-claude mcp add --transport http ytscribe https://mcp.youtubetranscript.dev --header "x-api-token: YOUR_API_KEY"
+claude mcp add --transport http youtubetranscript https://mcp.youtubetranscript.dev
 ```
 
 **Cursor** – `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "ytscribe": {
-      "url": "https://mcp.youtubetranscript.dev",
-      "headers": { "x-api-token": "YOUR_API_KEY" }
+    "youtubetranscript": {
+      "url": "https://mcp.youtubetranscript.dev"
     }
   }
 }
 ```
 
-**Antigravity:** URL `https://mcp.youtubetranscript.dev`, header `x-api-token: YOUR_API_KEY`
+**Antigravity:** URL `https://mcp.youtubetranscript.dev` (OAuth if supported, or `Authorization: Bearer YOUR_API_KEY`)
+
+**ChatGPT:** enable Developer mode, create a custom MCP app under Settings → Apps, and enter `https://mcp.youtubetranscript.dev`. Availability depends on the workspace plan. See the [official setup guide](https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt).
 
 **Local server:** If running `npm run start:http`, use `http://localhost:8080` instead.
 
@@ -104,7 +105,7 @@ docker build -f Dockerfile.cloudrun -t youtube-transcript-mcp:http .
 docker run -p 8080:8080 youtube-transcript-mcp:http
 ```
 
-Then connect clients to `http://localhost:8080` with `x-api-token` header.
+Then connect clients to `http://localhost:8080` with `Authorization: Bearer YOUR_API_KEY`.
 (Or use hosted: `https://mcp.youtubetranscript.dev` — no Docker needed.)
 
 **Docker Compose (stdio):**
