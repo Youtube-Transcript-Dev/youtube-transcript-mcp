@@ -1,0 +1,20 @@
+# Render Blueprint — YouTube Transcript MCP (HTTP server).
+# Migrated off GCP Cloud Run. Uses the HTTP entrypoint (server-http.js) which
+# listens on $PORT. The API base URL is the preserved www.youtubetranscript.dev,
+# so no code changes were needed for the platform move.
+services:
+  - type: web
+    name: youtube-transcript-mcp
+    runtime: docker
+    dockerfilePath: ./Dockerfile.cloudrun
+    dockerContext: .
+    plan: starter
+    region: ohio
+    autoDeploy: true
+    envVars:
+      - key: YTSM_BASE_URL
+        value: https://www.youtubetranscript.dev
+      # The MCP server's own public URL (used for OAuth metadata). Set to the
+      # custom domain (https://mcp.youtubetranscript.dev) once DNS points here.
+      - key: MCP_PUBLIC_URL
+        value: https://youtube-transcript-mcp-727q.onrender.com
