@@ -50,7 +50,43 @@ function json(res: import('node:http').ServerResponse, status: number, body: unk
   res.end(JSON.stringify(body));
 }
 
-const httpServer = createServer(async (nodeReq, nodeRes) => {
+// Big enough for any MCP JSON-RPC message; anything larger is refused rather
+// than buffered in memory.
+const MAX_BODY_BYTES = 1024 * 1024;
+const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'DELETE']);
+
+class BodyTooLargeError extends Error {}
+
+async function readBody(nodeReq: import('node:http').IncomingMessage): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  let total = 0;
+  for await (const chunk of nodeReq) {
+    total += chunk.length;
+    if (total > MAX_BODY_BYTES) throw new BodyTooLargeError();
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
+// Every request goes through here. The handler is async, and a rejection that
+// escaped it (a client hanging up mid-body, an odd method) would be unhandled
+// and stop the whole process for every user.
+const httpServer = createServer((nodeReq, nodeRes) => {
+  handleRequest(nodeReq, nodeRes).catch((err) => {
+    console.error('Request failed:', err);
+    if (!nodeRes.headersSent) {
+      nodeRes.writeHead(500, { 'Content-Type': 'text/plain', ...corsHeaders() });
+      nodeRes.end('Internal Server Error');
+    } else {
+      nodeRes.destroy();
+    }
+  });
+});
+
+async function handleRequest(
+  nodeReq: import('node:http').IncomingMessage,
+  nodeRes: import('node:http').ServerResponse
+): Promise<void> {
   const origin = mcpPublicOrigin();
   const reqUrl = nodeReq.url ?? '/';
 
@@ -95,6 +131,26 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
     return;
   }
 
+  const method = nodeReq.method ?? 'GET';
+  if (!ALLOWED_METHODS.has(method)) {
+    json(nodeRes, 405, { error: 'Method not allowed' }, { Allow: 'GET, HEAD, POST, DELETE, OPTIONS' });
+    return;
+  }
+
+  let body: Buffer | undefined;
+  if (method !== 'GET' && method !== 'HEAD') {
+    try {
+      body = await readBody(nodeReq);
+    } catch (err) {
+      if (err instanceof BodyTooLargeError) {
+        json(nodeRes, 413, { error: 'Request body too large' });
+        nodeReq.resume();
+        return;
+      }
+      throw err;
+    }
+  }
+
   const config = configSchema.parse({
     baseUrl,
     apiKey,
@@ -115,14 +171,8 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   for (const [k, v] of Object.entries(nodeReq.headers)) {
     if (v) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
   }
-  let body: Buffer | undefined;
-  if (nodeReq.method !== 'GET' && nodeReq.method !== 'HEAD') {
-    const chunks: Buffer[] = [];
-    for await (const chunk of nodeReq) chunks.push(chunk);
-    body = Buffer.concat(chunks);
-  }
   const request = new Request(url, {
-    method: nodeReq.method ?? 'GET',
+    method,
     headers,
     body: body?.byteLength ? body : undefined,
   } as RequestInit);
@@ -137,7 +187,13 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
     nodeRes.writeHead(res.status, resHeaders);
     if (res.body) {
       const reader = res.body.getReader();
+      // A client that hangs up must not leave the stream, and this request's
+      // MCP server, open forever.
+      nodeRes.on('close', () => {
+        reader.cancel().catch(() => {});
+      });
       for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+        if (nodeRes.destroyed) break;
         nodeRes.write(chunk.value);
       }
     }
@@ -149,7 +205,7 @@ const httpServer = createServer(async (nodeReq, nodeRes) => {
   } finally {
     await server.close();
   }
-});
+}
 
 httpServer.listen(port, () => {
   console.log(`MCP HTTP server on port ${port}`);
