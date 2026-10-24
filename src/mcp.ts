@@ -121,7 +121,7 @@ const toolRegistry: Record<
     schema: {
       name: 'list_transcripts',
       description:
-        'GET /api/v1/history. List or search user transcripts. Use search to find by video id, title, or transcript content.',
+        'GET /api/v2/history. List or search user transcripts. Use search to find by video id, title, or transcript content.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -143,7 +143,7 @@ const toolRegistry: Record<
         baseUrl: config.baseUrl,
         apiKey: config.apiKey,
         timeoutMs: config.timeoutMs,
-        path: '/api/v1/history',
+        path: '/api/v2/history',
         method: 'GET',
         query: {
           limit: typeof args.limit === 'number' ? args.limit : 10,
@@ -161,7 +161,7 @@ const toolRegistry: Record<
     schema: {
       name: 'get_transcript',
       description:
-        'GET /api/v1/transcripts/{video_id}. Get full transcript for a video.',
+        'GET /api/v2/transcripts/{video_id}. Get full transcript for a video.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -184,7 +184,7 @@ const toolRegistry: Record<
         baseUrl: config.baseUrl,
         apiKey: config.apiKey,
         timeoutMs: config.timeoutMs,
-        path: `/api/v1/transcripts/${encodeURIComponent(videoId)}`,
+        path: `/api/v2/transcripts/${encodeURIComponent(videoId)}`,
         method: 'GET',
         query: {
           id: typeof args.id === 'string' ? args.id : undefined,
@@ -214,14 +214,14 @@ const toolRegistry: Record<
           baseUrl: config.baseUrl,
           apiKey: config.apiKey,
           timeoutMs: config.timeoutMs,
-          path: '/api/v1/credits',
+          path: '/api/v2/credits',
           method: 'GET',
         }),
         callYtsmV2({
           baseUrl: config.baseUrl,
           apiKey: config.apiKey,
           timeoutMs: config.timeoutMs,
-          path: '/api/v1/history',
+          path: '/api/v2/history',
           method: 'GET',
           query: { limit: 1, page: 1 },
         }),
@@ -244,7 +244,7 @@ const toolRegistry: Record<
     schema: {
       name: 'delete_transcript',
       description:
-        'POST /api/v1/transcripts/bulk-delete. Delete transcripts by ids or by video_id.',
+        'POST /api/v2/transcripts/bulk-delete. Delete transcripts by ids or by video_id.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -274,7 +274,7 @@ const toolRegistry: Record<
           baseUrl: config.baseUrl,
           apiKey: config.apiKey,
           timeoutMs: config.timeoutMs,
-          path: `/api/v1/transcripts/${encodeURIComponent(videoId)}`,
+          path: `/api/v2/transcripts/${encodeURIComponent(videoId)}`,
           method: 'GET',
         });
         const transcriptId =
@@ -290,7 +290,7 @@ const toolRegistry: Record<
         baseUrl: config.baseUrl,
         apiKey: config.apiKey,
         timeoutMs: config.timeoutMs,
-        path: '/api/v1/transcripts/bulk-delete',
+        path: '/api/v2/transcripts/bulk-delete',
         method: 'POST',
         args: { ids },
       });
