@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Youtube-Transcript-Dev/youtube-transcript-mcp",
+  "title": "YouTube Transcript MCP",
+  "description": "Fetch YouTube transcripts with timestamps, search history, and export data for AI models.",
+  "version": "2.0.0",
+  "websiteUrl": "https://www.youtubetranscript.dev/resources/mcp-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Youtube-Transcript-Dev/youtube-transcript-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.youtubetranscript.dev",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "API key in Bearer format: Bearer <key> (from youtubetranscript.dev). OAuth clients can omit this and sign in instead.",
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
