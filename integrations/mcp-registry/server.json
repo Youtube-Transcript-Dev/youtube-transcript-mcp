@@ -1,5 +1,5 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schema/2025-12-11/server.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Youtube-Transcript-Dev/youtube-transcript-mcp",
   "title": "YouTube Transcript MCP",
   "description": "Fetch YouTube transcripts with timestamps, search history, and export data for AI models.",
@@ -17,7 +17,7 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "API token in Bearer format: Bearer <key>",
+          "description": "API key in Bearer format: Bearer <key> (from youtubetranscript.dev). OAuth clients can omit this and sign in instead.",
           "isSecret": true
         }
       ]
