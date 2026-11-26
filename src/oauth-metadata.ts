@@ -1,8 +1,20 @@
 const DEFAULT_MCP_URL = "https://mcp.youtubetranscript.dev";
 const DEFAULT_ISSUER = "https://www.youtubetranscript.dev";
 
+/**
+ * The address people connect to. Sign-in clients (Claude, ChatGPT) refuse metadata whose "resource"
+ * isn't the URL they used, so a Render hosting address (*.onrender.com, e.g. a stale MCP_PUBLIC_URL
+ * set in the dashboard) is never advertised: the custom domain is used instead.
+ */
 export function mcpPublicOrigin(): string {
-  return (process.env.MCP_PUBLIC_URL ?? DEFAULT_MCP_URL).replace(/\/+$/, "");
+  const configured = process.env.MCP_PUBLIC_URL?.trim();
+  let url = configured || DEFAULT_MCP_URL;
+  try {
+    if (new URL(url).hostname.endsWith(".onrender.com")) url = DEFAULT_MCP_URL;
+  } catch {
+    url = DEFAULT_MCP_URL;
+  }
+  return url.replace(/\/+$/, "");
 }
 
 export function isPublicMcpPath(urlPath: string): boolean {
