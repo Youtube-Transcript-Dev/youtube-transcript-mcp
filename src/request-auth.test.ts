@@ -31,3 +31,32 @@ describe('stripKeyFromUrl', () => {
     expect(stripKeyFromUrl('/mcp?key=secret&foo=1')).toBe('/mcp?foo=1');
   });
 });
+
+import { listTools } from './mcp.js';
+
+describe('tool annotations (required by ChatGPT and Claude app directories)', () => {
+  const byName = Object.fromEntries(listTools().map((t) => [t.name, t]));
+
+  test('every tool has a title and the full set of hints', () => {
+    for (const t of listTools()) {
+      expect(t.title).toBeTruthy();
+      expect(t.annotations).toMatchObject({
+        title: expect.any(String),
+        readOnlyHint: expect.any(Boolean),
+        destructiveHint: expect.any(Boolean),
+        idempotentHint: expect.any(Boolean),
+        openWorldHint: expect.any(Boolean),
+      });
+    }
+  });
+
+  test('only delete_transcript is destructive; readers are read-only', () => {
+    for (const n of ['get_transcript', 'list_transcripts', 'get_stats']) {
+      expect(byName[n].annotations?.readOnlyHint).toBe(true);
+    }
+    for (const t of listTools()) {
+      expect(t.annotations?.destructiveHint).toBe(t.name === 'delete_transcript');
+    }
+    expect(byName['transcribe_v2'].annotations?.openWorldHint).toBe(true);
+  });
+});

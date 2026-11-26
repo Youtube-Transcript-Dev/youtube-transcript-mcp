@@ -79,6 +79,12 @@ async function handleRequest(
       json(nodeRes, 200, protectedResourceMetadata(origin));
       return;
     }
+    // RFC 9728: clients that connect to <origin>/mcp look for metadata here,
+    // and expect `resource` to be the exact URL they connected to.
+    if (pathname === '/.well-known/oauth-protected-resource/mcp') {
+      json(nodeRes, 200, protectedResourceMetadata(`${origin}/mcp`));
+      return;
+    }
     if (pathname === '/.well-known/oauth-authorization-server') {
       nodeRes.writeHead(302, {
         Location: 'https://www.youtubetranscript.dev/.well-known/oauth-authorization-server',
@@ -101,7 +107,10 @@ async function handleRequest(
           'Authorization required. Use OAuth, Authorization: Bearer <API key>, or add ?key=<API key> to the server URL.',
       },
       {
-        'WWW-Authenticate': wwwAuthenticateHeader(origin),
+        // Point /mcp callers at the /mcp metadata so `resource` matches their URL.
+        'WWW-Authenticate': wwwAuthenticateHeader(
+          new URL(reqUrl, 'http://localhost').pathname.replace(/\/+$/, '') === '/mcp' ? `${origin}/mcp` : origin
+        ),
         'Access-Control-Expose-Headers': 'WWW-Authenticate',
       }
     );
