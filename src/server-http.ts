@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** HTTP MCP server. Auth via OAuth Bearer, then x-api-token. */
+/** HTTP MCP server. Auth via OAuth Bearer, then x-api-token, then ?key=. */
 
 import 'dotenv/config';
 import { createServer } from 'node:http';
@@ -12,34 +12,11 @@ import {
   protectedResourceMetadata,
   wwwAuthenticateHeader,
 } from './oauth-metadata.js';
+import { getApiKeyFromRequest, stripKeyFromUrl } from './request-auth.js';
 
 const port = parseInt(process.env.PORT ?? '8080', 10);
 const baseUrl = process.env.YTSM_BASE_URL ?? 'https://www.youtubetranscript.dev';
 const timeoutMs = parseInt(process.env.YTSM_TIMEOUT_MS ?? '30000', 10);
-
-function getApiKeyFromRequest(req: {
-  headers: Record<string, string | string[] | undefined>;
-}): string | null {
-  const headers = req.headers;
-  const auth = headers['authorization'];
-  if (auth) {
-    const m = (Array.isArray(auth) ? auth[0] : auth).match(/^Bearer\s+(.+)$/i);
-    if (m) return m[1];
-  }
-  const token = headers['x-api-token'];
-  if (token) return Array.isArray(token) ? token[0] : token;
-  return null;
-}
-
-function stripKeyFromUrl(originalUrl: string): string {
-  try {
-    const url = new URL(originalUrl, 'http://localhost');
-    url.searchParams.delete('key');
-    return url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '');
-  } catch {
-    return originalUrl;
-  }
-}
 
 function json(res: import('node:http').ServerResponse, status: number, body: unknown, extra: Record<string, string> = {}) {
   res.writeHead(status, {
@@ -102,6 +79,12 @@ async function handleRequest(
       json(nodeRes, 200, protectedResourceMetadata(origin));
       return;
     }
+    // RFC 9728: clients that connect to <origin>/mcp look for metadata here,
+    // and expect `resource` to be the exact URL they connected to.
+    if (pathname === '/.well-known/oauth-protected-resource/mcp') {
+      json(nodeRes, 200, protectedResourceMetadata(`${origin}/mcp`));
+      return;
+    }
     if (pathname === '/.well-known/oauth-authorization-server') {
       nodeRes.writeHead(302, {
         Location: 'https://www.youtubetranscript.dev/.well-known/oauth-authorization-server',
@@ -121,10 +104,13 @@ async function handleRequest(
       401,
       {
         error:
-          'Authorization required. Use OAuth or Authorization: Bearer <token>.',
+          'Authorization required. Use OAuth, Authorization: Bearer <API key>, or add ?key=<API key> to the server URL.',
       },
       {
-        'WWW-Authenticate': wwwAuthenticateHeader(origin),
+        // Point /mcp callers at the /mcp metadata so `resource` matches their URL.
+        'WWW-Authenticate': wwwAuthenticateHeader(
+          new URL(reqUrl, 'http://localhost').pathname.replace(/\/+$/, '') === '/mcp' ? `${origin}/mcp` : origin
+        ),
         'Access-Control-Expose-Headers': 'WWW-Authenticate',
       }
     );

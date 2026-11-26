@@ -61,10 +61,24 @@ function errText(error: unknown): { message: string; details?: unknown } {
   return { message: String(error) };
 }
 
+interface ToolAnnotations {
+  title?: string;
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint?: boolean;
+}
+
 const toolRegistry: Record<
   string,
   {
-    schema: { name: string; description: string; inputSchema: object };
+    schema: {
+      name: string;
+      title?: string;
+      description: string;
+      inputSchema: object;
+      annotations?: ToolAnnotations;
+    };
     handler: (
       args: Record<string, unknown>,
       config: McpConfig
@@ -74,6 +88,8 @@ const toolRegistry: Record<
   transcribe_v2: {
     schema: {
       name: 'transcribe_v2',
+      title: 'Transcribe YouTube video',
+      annotations: { title: 'Transcribe YouTube video', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
       description:
         'POST /api/v2/transcribe. Fast caption-based transcript (no ASR). Use manual or auto captions only.',
       inputSchema: {
@@ -120,6 +136,8 @@ const toolRegistry: Record<
   list_transcripts: {
     schema: {
       name: 'list_transcripts',
+      title: 'List transcripts',
+      annotations: { title: 'List transcripts', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       description:
         'GET /api/v2/history. List or search user transcripts. Use search to find by video id, title, or transcript content.',
       inputSchema: {
@@ -160,6 +178,8 @@ const toolRegistry: Record<
   get_transcript: {
     schema: {
       name: 'get_transcript',
+      title: 'Get transcript',
+      annotations: { title: 'Get transcript', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       description:
         'GET /api/v2/transcripts/{video_id}. Get full transcript for a video.',
       inputSchema: {
@@ -200,6 +220,8 @@ const toolRegistry: Record<
   get_stats: {
     schema: {
       name: 'get_stats',
+      title: 'Get account stats',
+      annotations: { title: 'Get account stats', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       description:
         'Get stats: credits left, transcripts created, plan, rate limit.',
       inputSchema: {
@@ -243,6 +265,8 @@ const toolRegistry: Record<
   delete_transcript: {
     schema: {
       name: 'delete_transcript',
+      title: 'Delete transcripts',
+      annotations: { title: 'Delete transcripts', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       description:
         'POST /api/v2/transcripts/bulk-delete. Delete transcripts by ids or by video_id.',
       inputSchema: {

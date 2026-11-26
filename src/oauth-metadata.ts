@@ -41,8 +41,11 @@ export function authorizationServerMetadata(issuer = DEFAULT_ISSUER) {
 }
 
 export function wwwAuthenticateHeader(resource: string) {
-  const origin = resource.replace(/\/+$/, "");
-  return `Bearer realm="YouTube Transcript MCP", resource_metadata="${origin}/.well-known/oauth-protected-resource", scope="mcp"`;
+  // RFC 9728: https://host/path -> https://host/.well-known/oauth-protected-resource/path
+  const u = new URL(resource);
+  const path = u.pathname.replace(/\/+$/, "");
+  const metadataUrl = `${u.origin}/.well-known/oauth-protected-resource${path}`;
+  return `Bearer realm="YouTube Transcript MCP", resource_metadata="${metadataUrl}", scope="mcp"`;
 }
 
 export function corsHeaders(): Record<string, string> {

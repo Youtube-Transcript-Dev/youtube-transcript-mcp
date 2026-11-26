@@ -14,7 +14,7 @@ services:
     envVars:
       - key: YTSM_BASE_URL
         value: https://www.youtubetranscript.dev
-      # The MCP server's own public URL (used for OAuth metadata). Set to the
-      # custom domain (https://mcp.youtubetranscript.dev) once DNS points here.
+      # The MCP server's own public URL (used for OAuth metadata). The custom
+      # domain answers here, and clients must see it, not the onrender.com host.
       - key: MCP_PUBLIC_URL
-        value: https://youtube-transcript-mcp-727q.onrender.com
+        value: https://mcp.youtubetranscript.dev
