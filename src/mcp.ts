@@ -69,6 +69,31 @@ interface ToolAnnotations {
   openWorldHint?: boolean;
 }
 
+/**
+ * Adds the balance after a transcribe (owner, 2026-11-26: show what a request cost), so the assistant can say
+ * "used 1 credit, 1,918 left". The API already returns credits_used; the balance is one more read. Best-effort:
+ * if that read fails, the transcript comes back unchanged.
+ */
+async function withCreditsRemaining(result: unknown, config: McpConfig): Promise<unknown> {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
+  try {
+    const credits = await callYtsmV2({
+      baseUrl: config.baseUrl,
+      apiKey: config.apiKey,
+      timeoutMs: config.timeoutMs,
+      path: '/api/v2/credits',
+      method: 'GET',
+    });
+    const remaining =
+      credits && typeof credits === 'object' ? (credits as Record<string, unknown>).credits : undefined;
+    if (typeof remaining !== 'number') return result;
+    const body = result as Record<string, unknown>;
+    return { credits_used: body.credits_used ?? 0, credits_remaining: remaining, ...body };
+  } catch {
+    return result;
+  }
+}
+
 const toolRegistry: Record<
   string,
   {
@@ -91,7 +116,7 @@ const toolRegistry: Record<
       title: 'Transcribe YouTube video',
       annotations: { title: 'Transcribe YouTube video', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
       description:
-        'POST /api/v2/transcribe. Fast caption-based transcript (no ASR). Use manual or auto captions only.',
+        'Get the transcript of a YouTube video from its captions (fast, no speech-to-text). The result includes credits_used (what this request cost) and credits_remaining (the balance after it); tell the user both in one short line after the transcript.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -122,15 +147,17 @@ const toolRegistry: Record<
         additionalProperties: false,
       },
     },
-    handler: async (args, config) =>
-      callYtsmV2({
+    handler: async (args, config) => {
+      const result = await callYtsmV2({
         baseUrl: config.baseUrl,
         apiKey: config.apiKey,
         timeoutMs: config.timeoutMs,
         path: '/api/v2/transcribe',
         method: 'POST',
         args,
-      }),
+      });
+      return withCreditsRemaining(result, config);
+    },
   },
 
   list_transcripts: {
